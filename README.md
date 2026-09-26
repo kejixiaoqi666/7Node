@@ -12,6 +12,10 @@ Node backend for [Xboard](https://github.com/cedar2025/Xboard). Supports `sing-b
 - Deploy modes: node mode, machine mode, standalone mode
 - Multi-instance: single process binding multiple panels / nodes
 
+## 本仓库定制版安装
+
+请先阅读 [Debian 13 安装及实测记录](docs/DEPLOYMENT_ZH.md)。下方上游安装方式不包含本仓库 AnyTLS + REALITY 修改。当前 REST 轮询可用，WebSocket 实机故障及完整同步验收待后续完成。
+
 ## Install
 
 ### Docker
@@ -41,6 +45,7 @@ curl -fsSL https://raw.githubusercontent.com/cedar2025/xboard-node/dev/install.s
 # Machine mode
 curl -fsSL https://raw.githubusercontent.com/cedar2025/xboard-node/dev/install.sh | \
   sudo bash -s -- --mode machine --panel https://panel.example.com --token TOKEN --machine-id 1
+```
 
 ## xbctl
 
