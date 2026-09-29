@@ -70,6 +70,9 @@ Legacy single-panel config is fully compatible. Appending bindings auto-migrates
 
 ## Extensions
 
+2026-09-30：定制 sing-box 面板路由/DNS 修复已通过两个真实节点测试，安装器已更新发行包。
+见 [路由验证与回退记录](docs/ROUTING_VERIFICATION_ZH.md)。
+
 - Custom routes: [docs-custom-routes.md](docs-custom-routes.md)
 - Custom outbounds: [docs-custom-outbounds.md](docs-custom-outbounds.md)
 - DNS providers (ACME DNS-01): [docs-dns-providers.md](docs-dns-providers.md)

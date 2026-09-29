@@ -15,7 +15,7 @@ curl -fL https://raw.githubusercontent.com/xiaofujie369/xbord-node-v3/main/insta
 
 交互输入上述信息，可选申请域名证书（需要 DNS 正确、TCP 80 放行并同意证书服务条款）。脚本下载固定版本定制二进制，验证压缩包及二进制 SHA-256，创建受限配置及 systemd 开机服务，拒绝覆盖已有安装。无需现场编译，当前只提供 amd64 包。脚本不创建面板节点、不修改防火墙；安装后仍需绑定节点和设置证书路径。当前已部署的测试 VPS 不要重复安装。
 
-发行包 `custom-anytls-20260929` 使用此前 VPS 实测的 417cd4f 定制二进制，SHA-256 为 `581f9a2d303ffa7d54a47df3bcaff852bbbd9cf8f095beeb9f8b184e615048d1`。脚本已通过 shell 语法检查及隔离模拟测试（证书开启/跳过、摘要错误拒绝安装、已有安装保护）；尚未在另一台全新真实 VPS 上执行该脚本。
+当前发行包 `custom-routes-20260930` 在原定制内核上修复面板路由及 DNS 分流，二进制 SHA-256 为 `bc7d56a087cf3f202be596674aa707d6ef92ac093ac7949f6f9721a538fe181f`。已经在已有服务上完成 VLESS REALITY、Hysteria2 TLS + Salamander 的实际连接、DNS 分流及阻断验证，详见 [路由修复记录](ROUTING_VERIFICATION_ZH.md)。安装器保留原有配置与证书流程，仍拒绝覆盖已有安装；不要在已有服务上重复运行全新安装脚本。
 
 ## 1. 准备与备份
 
