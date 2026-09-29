@@ -4,6 +4,19 @@
 
 本指南对应节点源码 417cd4f，面板源码 019677c。2026-09-27 已在 Debian 13 / amd64 上完成 AnyTLS TLS、AnyTLS REALITY、Hysteria2 TLS + Salamander 的实际代理连接和 HTTPS 下载验证。不是全部客户端、移动网络或同步功能的完整验收。
 
+## 一键安装（全新 Debian/Ubuntu amd64）
+
+先在面板创建服务器，准备根地址、服务器 ID 和专用 token。在新 VPS 以 root 执行：
+
+```bash
+apt-get update && apt-get install -y ca-certificates curl
+curl -fL https://raw.githubusercontent.com/xiaofujie369/xbord-node-v3/main/install-custom.sh -o /root/install-xboard-custom.sh && bash /root/install-xboard-custom.sh
+```
+
+交互输入上述信息，可选申请域名证书（需要 DNS 正确、TCP 80 放行并同意证书服务条款）。脚本下载固定版本定制二进制，验证压缩包及二进制 SHA-256，创建受限配置及 systemd 开机服务，拒绝覆盖已有安装。无需现场编译，当前只提供 amd64 包。脚本不创建面板节点、不修改防火墙；安装后仍需绑定节点和设置证书路径。当前已部署的测试 VPS 不要重复安装。
+
+发行包 `custom-anytls-20260929` 使用此前 VPS 实测的 417cd4f 定制二进制，SHA-256 为 `581f9a2d303ffa7d54a47df3bcaff852bbbd9cf8f095beeb9f8b184e615048d1`。脚本已通过 shell 语法检查及隔离模拟测试（证书开启/跳过、摘要错误拒绝安装、已有安装保护）；尚未在另一台全新真实 VPS 上执行该脚本。
+
 ## 1. 准备与备份
 
 以下适用于新的 Debian VPS。已有运行节点时，先备份配置、二进制和 systemd unit，检查端口占用；不要直接覆盖现有服务。当前已部署的测试 VPS 无需重复安装。
