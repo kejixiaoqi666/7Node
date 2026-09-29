@@ -1,1 +1,2 @@
 install-custom.sh text eol=lf
+tune-network.sh text eol=lf
