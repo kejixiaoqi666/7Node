@@ -108,4 +108,4 @@ echo '放行 TCP 443/8443 和 UDP 2443；证书续期需要 TCP 80。本脚本�
 if [[ -n $CERT_DOMAIN ]]; then
     printf '面板 file 证书路径：\n/etc/letsencrypt/live/%s/fullchain.pem\n/etc/letsencrypt/live/%s/privkey.pem\n' "$CERT_DOMAIN" "$CERT_DOMAIN"
 fi
-echo 'FlClash 使用标准 AnyTLS / Hysteria2；AnyTLS REALITY 需要兼容 sing-box。当前 REST 轮询可用，WebSocket 修复待完成。'
+echo 'FlClash 使用标准 AnyTLS / Hysteria2；AnyTLS REALITY 需要兼容 sing-box。主站需配置有效的 wss:// 地址及 WebSocket 反向代理；REST 轮询保留。'

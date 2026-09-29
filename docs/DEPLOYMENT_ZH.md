@@ -162,3 +162,7 @@ chmod 700 /etc/letsencrypt/renewal-hooks/deploy/xboard-node-custom.sh
 ## 7. 回退
 
 新 VPS 隔离安装可先 `systemctl disable --now xboard-node-custom`，保留配置与日志排查。升级已有服务则恢复备份二进制、配置及 unit，再 daemon-reload 和重启。面板回退按备份清单还原 PHP 与 manifest；不要为撤销页面修改覆盖整个在线数据库。
+
+## 2026-09-29 WebSocket 更新
+
+主站 WebSocket URL 与宝塔反向代理已修复，设备 IP 列表去重后的 JSON 格式已兼容。两台服务器、四个节点已通过连接、主动 sync.nodes 推送和断线自动重连验证。上文未通过的描述是 9 月 27 日状态；当前 REST 仍保留作为补充。完整设备限制和长期故障验收尚未完成。面板分支的 WEBSOCKET_VERIFICATION.md 记录详细证据。

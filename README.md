@@ -14,7 +14,7 @@ Node backend for [Xboard](https://github.com/cedar2025/Xboard). Supports `sing-b
 
 ## 本仓库定制版安装
 
-已提供交互式 `install-custom.sh`，无需 VPS 编译。请先阅读 [Debian 13 一键安装及实测记录](docs/DEPLOYMENT_ZH.md)。下方上游安装方式不包含本仓库 AnyTLS + REALITY 修改。当前 REST 轮询可用，WebSocket 实机故障及完整同步验收待后续完成。
+已提供交互式 `install-custom.sh`，无需 VPS 编译。请先阅读 [Debian 13 一键安装及实测记录](docs/DEPLOYMENT_ZH.md)。下方上游安装方式不包含本仓库 AnyTLS + REALITY 修改。2026-09-29 已修复主站 WebSocket 地址/代理和设备列表序列化问题，连接、推送及自动重连已实测；REST 保留，完整同步边界验收仍待完成。
 
 ## VPS 网络调优
 
