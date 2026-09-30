@@ -41,9 +41,10 @@ type SingBox struct {
 	ctx    context.Context
 	cancel context.CancelFunc
 
-	users      []model.UserSpec
-	nodeConfig *model.NodeSpec
-	tls        kernel.TLSCert
+	users       []model.UserSpec
+	nodeConfig  *model.NodeSpec
+	tls         kernel.TLSCert
+	appliedJSON []byte // last successfully applied full configuration
 
 	// connTracker is our lightweight in-process byte/IP tracker.
 	// Created fresh on every Start (full restart).
@@ -94,6 +95,9 @@ func (s *SingBox) Start(nodeConfig *model.NodeSpec, users []model.UserSpec, tls 
 	defer s.mu.Unlock()
 
 	cfgMap := buildConfig(s.cfg, nodeConfig, users, tls)
+	if err := validateOutboundReferences(cfgMap); err != nil {
+		return err
+	}
 	data, err := json.Marshal(cfgMap)
 	if err != nil {
 		return fmt.Errorf("marshal config: %w", err)
@@ -138,6 +142,7 @@ func (s *SingBox) Start(nodeConfig *model.NodeSpec, users []model.UserSpec, tls 
 	s.users = users
 	s.nodeConfig = nodeConfig
 	s.tls = tls
+	s.appliedJSON = append([]byte(nil), data...)
 
 	// Fresh tracker on full restart.
 	s.connTracker = NewConnTracker(0)
@@ -189,9 +194,9 @@ func recycleOldBox(oldBox *box.Box, oldCancel context.CancelFunc, oldCtx context
 	nlog.Core().Debug("sing-box: old instance recycled")
 }
 
-// Reload hot-swaps the inbound users and routing rules without restarting the box.
-// Routes, outbounds, and the connTracker stay alive so in-flight connections
-// continue to be tracked correctly.
+// Reload updates inbound state in place when the runtime graph is unchanged.
+// Outbound, DNS or route graph changes rebuild this node's box as one unit,
+// preserving its traffic tracker. Other nodes and the machine process survive.
 func (s *SingBox) Reload(nodeConfig *model.NodeSpec, users []model.UserSpec, tls kernel.TLSCert) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -210,6 +215,12 @@ func (s *SingBox) Reload(nodeConfig *model.NodeSpec, users []model.UserSpec, tls
 	if err != nil {
 		return fmt.Errorf("parse options: %w", err)
 	}
+	if err := validateOutboundReferences(cfgMap); err != nil {
+		return err
+	}
+	if !bytes.Equal(runtimeGraph(s.appliedJSON), runtimeGraph(data)) {
+		return s.replaceRuntimeLocked(data, nodeConfig, users, tls)
+	}
 
 	im := service.FromContext[adapter.InboundManager](s.ctx)
 	if im == nil {
@@ -223,7 +234,7 @@ func (s *SingBox) Reload(nodeConfig *model.NodeSpec, users []model.UserSpec, tls
 
 	// Update routing rules
 	if err := router.UpdateRules(opts.Route.Rules, opts.Route.RuleSet); err != nil {
-		nlog.Core().Debug("routing reload failed", "error", err)
+		return fmt.Errorf("routing reload failed: %w", err)
 	} else {
 		nlog.Core().Debug("sing-box routing reloaded")
 	}
@@ -311,6 +322,7 @@ func (s *SingBox) Reload(nodeConfig *model.NodeSpec, users []model.UserSpec, tls
 	s.users = users
 	s.nodeConfig = nodeConfig
 	s.tls = tls
+	s.appliedJSON = append([]byte(nil), data...)
 	return nil
 }
 

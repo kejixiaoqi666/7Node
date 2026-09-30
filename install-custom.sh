@@ -2,9 +2,9 @@
 # Fresh Debian/Ubuntu amd64 installs only. Uses the live-tested custom binary.
 set -Eeuo pipefail
 umask 077
-RELEASE=custom-routes-20260930
-ARCHIVE_SHA=f9a0db349f67011e664b57b922655612784b709f63c9498b52c290e6f8cae901
-BINARY_SHA=bc7d56a087cf3f202be596674aa707d6ef92ac093ac7949f6f9721a538fe181f
+RELEASE=custom-hotreload-20261001
+ARCHIVE_SHA=0cffb212f033b54eca40aee9b5f0f15cee728af83636cf90d624b81ec282e45d
+BINARY_SHA=58ce7b14e5e2d23b6cd2765c2ac1771b1f247e4e7e2df1ea8e61a0d1bcbcdcda
 BASE=https://github.com/xiaofujie369/xbord-node-v3/releases/download
 UNIT=xboard-node-custom.service
 fail() { printf '错误：%s\n' "$*" >&2; exit 1; }

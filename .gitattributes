@@ -1,2 +1,3 @@
 install-custom.sh text eol=lf
 tune-network.sh text eol=lf
+upgrade-custom.sh text eol=lf

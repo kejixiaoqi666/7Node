@@ -70,6 +70,9 @@ Legacy single-panel config is fully compatible. Appending bindings auto-migrates
 
 ## Extensions
 
+2026-10-01：修复出站、DNS 和路由依赖的自动更新。已有标准安装可使用
+`upgrade-custom.sh`，详见 [热更新实测与旧版升级](docs/HOT_RELOAD_ZH.md)。
+
 2026-09-30：定制 sing-box 面板路由/DNS 修复已通过两个真实节点测试，安装器已更新发行包。
 见 [路由验证与回退记录](docs/ROUTING_VERIFICATION_ZH.md)。
 
