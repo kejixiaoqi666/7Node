@@ -22,4 +22,3 @@ for case in ['success','bad-hash','restart-failure']:
   assert (conf/'config.yml').read_text()=='preserved'
   assert any(x.read_bytes()==b'old-binary' for x in backups.glob('*/xboard-node'))
   print(case,'PASS')
-
