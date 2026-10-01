@@ -70,6 +70,9 @@ Legacy single-panel config is fully compatible. Appending bindings auto-migrates
 
 ## Extensions
 
+2026-10-01：完成标准 TUIC v5 + TLS 的实机、订阅及 UDP 转发验证，修复首次安装时
+未写入证书路径的问题。见 [TUIC 部署验证](docs/TUIC_DEPLOYMENT_ZH.md)。
+
 2026-10-01：修复出站、DNS 和路由依赖的自动更新。已有标准安装可使用
 `upgrade-custom.sh`，详见 [热更新实测与旧版升级](docs/HOT_RELOAD_ZH.md)。
 

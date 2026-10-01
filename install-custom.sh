@@ -48,7 +48,7 @@ curl --fail --location --retry 3 --proto '=https' --tlsv1.2 \
 echo "$ARCHIVE_SHA  $TMP_DIR/node.gz" | sha256sum -c -
 gzip -dc "$TMP_DIR/node.gz" > "$TMP_DIR/xboard-node"
 echo "$BINARY_SHA  $TMP_DIR/xboard-node" | sha256sum -c -
-export PANEL_URL MACHINE_ID MACHINE_TOKEN
+export PANEL_URL MACHINE_ID MACHINE_TOKEN CERT_DOMAIN
 python3 - "$TMP_DIR/config.yml" <<'PY'
 import json, os, sys, urllib.parse
 url=os.environ['PANEL_URL'].rstrip('/')
@@ -58,6 +58,11 @@ if not parts.hostname or parts.username or parts.password or parts.path:
 config={'panel':{'url':url}, 'machine':{'machine_id':int(os.environ['MACHINE_ID']),
         'token':os.environ['MACHINE_TOKEN']}, 'kernel':{'type':'singbox'},
         'log':{'level':'info'}, 'health_port':0}
+domain=os.environ.get('CERT_DOMAIN','')
+if domain:
+    cert_dir='/etc/letsencrypt/live/'+domain
+    config['cert']={'cert_mode':'file','cert_file':cert_dir+'/fullchain.pem',
+                    'key_file':cert_dir+'/privkey.pem'}
 # JSON without escaped slashes is also valid YAML for this node parser.
 with open(sys.argv[1], 'w') as f: json.dump(config,f)
 PY
