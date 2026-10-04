@@ -1,4 +1,4 @@
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::Value;
 use sha2::{Digest, Sha256};
 use thiserror::Error;
@@ -200,8 +200,22 @@ pub struct RouteRule {
     pub matches: Vec<String>,
     #[serde(default)]
     pub action: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deserialize_nullable_string")]
     pub action_value: String,
+}
+
+/// XBoard serializes an unset route action value as JSON null. Preserve the
+/// core model's empty-string representation without accepting lossy types.
+fn deserialize_nullable_string<'de, D>(deserializer: D) -> Result<String, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = Option::<Value>::deserialize(deserializer)?;
+    match value {
+        None => Ok(String::new()),
+        Some(Value::String(text)) => Ok(text),
+        Some(_) => Err(serde::de::Error::custom("expected null or a string")),
+    }
 }
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]

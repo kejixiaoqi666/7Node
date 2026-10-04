@@ -54,3 +54,14 @@ fn representative_config_rejects_unmapped_fields() {
     let raw = serde_json::json!({"protocol":"vless","server_port":443,"future_panel_field":true});
     assert!(serde_json::from_value::<NodeSpec>(raw).is_err());
 }
+
+#[test]
+fn nullable_route_action_value_means_empty_value() {
+    let raw = serde_json::json!({
+        "protocol":"anytls",
+        "server_port":443,
+        "routes":[{"id":1,"match":["ads"],"action":"block","action_value":null}]
+    });
+    let spec: NodeSpec = serde_json::from_value(raw).unwrap();
+    assert_eq!(spec.routes[0].action_value, "");
+}
