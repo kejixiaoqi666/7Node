@@ -36,3 +36,21 @@ fn rejects_malformed_or_oversized_ws_messages_and_ignores_unknown_events() {
     let oversized = vec![b'x'; 10 * 1024 * 1024 + 1];
     assert!(parse_ws_message(&oversized).is_err());
 }
+
+#[test]
+fn nullable_limits_are_unlimited_in_ws_users() {
+    let event = parse_ws_message(
+        br#"{"event":"sync.users","data":{"node_id":7,"users":[{"id":9,"uuid":"u","speed_limit":null,"device_limit":null}]}}"#,
+    )
+    .unwrap()
+    .unwrap();
+    match event {
+        WsEvent::Users { node_id, users } => {
+            assert_eq!(node_id, Some(7));
+            assert_eq!(users[0].id, 9);
+            assert_eq!(users[0].speed_limit, 0);
+            assert_eq!(users[0].device_limit, 0);
+        }
+        other => panic!("unexpected event: {other:?}"),
+    }
+}

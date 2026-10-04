@@ -142,6 +142,23 @@ fn users_reject_unknown_fields_to_avoid_dropping_limits() {
 }
 
 #[test]
+fn nullable_limits_mean_unlimited_for_rest_users() {
+    let user: User =
+        serde_json::from_str(r#"{"id":1,"uuid":"x","speed_limit":null,"device_limit":null}"#)
+            .unwrap();
+    assert_eq!(user.speed_limit, 0);
+    assert_eq!(user.device_limit, 0);
+}
+
+#[test]
+fn nullable_limit_decoder_keeps_numeric_compatibility() {
+    let user: User =
+        serde_json::from_str(r#"{"id":1,"uuid":"x","speed_limit":"12","device_limit":3}"#).unwrap();
+    assert_eq!(user.speed_limit, 12);
+    assert_eq!(user.device_limit, 3);
+}
+
+#[test]
 fn production_requires_https() {
     assert!(Panel::new("http://example.com", auth()).is_err());
     assert!(Panel::new("https://example.com", auth()).is_ok());

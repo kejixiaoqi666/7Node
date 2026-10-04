@@ -38,9 +38,9 @@ struct DevicesData {
 struct PanelUser {
     id: i64,
     uuid: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::deserialize_nullable_i64")]
     speed_limit: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "crate::deserialize_nullable_i64")]
     device_limit: i64,
 }
 impl PanelUser {

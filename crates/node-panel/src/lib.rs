@@ -1,7 +1,7 @@
 //! Bounded XBoard REST/WebSocket transport with explicit application acknowledgements.
 use node_core::NodeSpec;
 use reqwest::{Client, Method, Response, StatusCode, Url, header};
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use serde_json::{Map, Value, json};
 use std::{collections::BTreeMap, time::Duration};
 use thiserror::Error;
@@ -110,10 +110,32 @@ impl Auth {
 pub struct User {
     pub id: i64,
     pub uuid: String,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deserialize_nullable_i64")]
     pub speed_limit: i64,
-    #[serde(default)]
+    #[serde(default, deserialize_with = "deserialize_nullable_i64")]
     pub device_limit: i64,
+}
+
+/// XBoard returns JSON null for an unset speed/device limit. Keep the core
+/// representation's zero value for "unlimited", while still rejecting
+/// booleans, objects, floats, and other silently lossy values.
+pub(crate) fn deserialize_nullable_i64<'de, D>(deserializer: D) -> Result<i64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    let value = Option::<Value>::deserialize(deserializer)?;
+    match value {
+        None => Ok(0),
+        Some(Value::Number(number)) => number
+            .as_i64()
+            .ok_or_else(|| serde::de::Error::custom("expected a signed integer")),
+        Some(Value::String(text)) => text
+            .parse::<i64>()
+            .map_err(|_| serde::de::Error::custom("expected a signed integer string")),
+        Some(_) => Err(serde::de::Error::custom(
+            "expected null, a signed integer, or a signed integer string",
+        )),
+    }
 }
 #[derive(Debug, Deserialize)]
 struct Users {
