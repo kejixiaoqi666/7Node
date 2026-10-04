@@ -1,7 +1,7 @@
 //! Experimental, single-node runtime. REST owns snapshots; WS only requests resync.
 use node_core::{AppliedSnapshot, UserSpec};
 use node_kernel::{KernelAdapter, KernelError, KernelStatus, SingBoxProcessKernel};
-use node_panel::{Fetch, Panel, PanelError, ReportOutcome, WsClient, WsEvent};
+use node_panel::{Auth, Fetch, Panel, PanelError, ReportOutcome, WsClient, WsEvent};
 pub mod traffic;
 use serde::{Deserialize, Serialize};
 use std::{
@@ -33,6 +33,10 @@ pub struct RuntimeConfig {
     pub poll_seconds: u64,
     #[serde(default)]
     pub websocket: bool,
+    /// Permit a local-only HTTP panel fixture. Production configurations must
+    /// leave this disabled so the panel transport remains HTTPS-only.
+    #[serde(default)]
+    pub allow_insecure_loopback: bool,
     #[serde(default)]
     pub native_user_updates: bool,
     #[serde(default)]
@@ -74,6 +78,24 @@ impl RuntimeConfig {
             || (self.machine_id.is_none() && self.node_type.as_deref().is_none_or(str::is_empty))
         {
             return Err(RuntimeError::Config);
+        }
+        if self.allow_insecure_loopback {
+            let auth = match self.machine_id {
+                Some(id) => Auth::machine("configuration-check-placeholder", id, self.node_id),
+                None => Auth::legacy(
+                    "configuration-check-placeholder",
+                    self.node_id,
+                    self.node_type.clone().unwrap_or_default(),
+                ),
+            };
+            // Panel::new_for_test still requires a loopback host and rejects
+            // credentials, paths, queries, and fragments. The explicit flag
+            // therefore cannot silently downgrade an external panel URL.
+            if !self.panel_url.starts_with("http://")
+                || Panel::new_for_test(&self.panel_url, auth).is_err()
+            {
+                return Err(RuntimeError::Config);
+            }
         }
         Ok(())
     }

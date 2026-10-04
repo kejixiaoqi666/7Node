@@ -96,6 +96,9 @@ Linux 配置示例见 `examples/runtime-rust.json`。它是独立的实验配置
 }
 ```
 
+`allow_insecure_loopback` 默认关闭。只有本地隔离夹具需要使用
+`http://127.0.0.1:<port>` 时才显式设为 `true`；运行时仍拒绝外部 HTTP、凭据、路径、查询和片段，生产面板继续要求 HTTPS。
+
 先替换实际路径和节点 ID，在当前 shell 提供 token 环境变量，然后启动：
 
 ```bash

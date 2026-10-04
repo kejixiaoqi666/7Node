@@ -89,3 +89,44 @@ fn omitted_external_kernel_selects_builtin_rust_without_files_or_token() {
     assert_eq!(output.status.success(), cfg!(unix));
     assert!(!dir.0.join("unused-state").exists());
 }
+
+#[test]
+fn loopback_http_requires_explicit_test_flag() {
+    let dir = support::TestDir::new();
+    let path = dir.0.join("loopback.json");
+    let base = serde_json::json!({
+        "panel_url":"http://127.0.0.1:18120",
+        "token_env":"XBORD_CLI_FIXTURE_MISSING_TOKEN",
+        "node_id":7,
+        "machine_id":1,
+        "singbox_executable":dir.0.join("not-installed-kernel"),
+        "state_dir":dir.0.join("unused-state")
+    });
+    std::fs::write(&path, base.to_string()).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_xboard-node-rust"))
+        .args(["--config", path.to_str().unwrap(), "--check"])
+        .env_remove("XBORD_CLI_FIXTURE_MISSING_TOKEN")
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+
+    let mut test_config = base;
+    test_config["allow_insecure_loopback"] = serde_json::json!(true);
+    std::fs::write(&path, test_config.to_string()).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_xboard-node-rust"))
+        .args(["--config", path.to_str().unwrap(), "--check"])
+        .env_remove("XBORD_CLI_FIXTURE_MISSING_TOKEN")
+        .output()
+        .unwrap();
+    assert!(output.status.success());
+
+    let mut external = test_config;
+    external["panel_url"] = serde_json::json!("http://panel.example.com:18120");
+    std::fs::write(&path, external.to_string()).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_xboard-node-rust"))
+        .args(["--config", path.to_str().unwrap(), "--check"])
+        .env_remove("XBORD_CLI_FIXTURE_MISSING_TOKEN")
+        .output()
+        .unwrap();
+    assert!(!output.status.success());
+}
