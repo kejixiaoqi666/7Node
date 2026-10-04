@@ -1,5 +1,15 @@
 # xboard-node
 
+## Rust 重构（实验）
+
+已把交付包中的 Rust 模块接成独立的 `xboard-node-rust` 单节点程序。**当前默认路径的控制层和协议数据层均为 Rust**：REST 同步、WS 重同步提示、VLESS TCP、VLESS/Trojan 文件 TLS、TCP 转发、用户热更新及失败恢复包含在同一个二进制中，无需 Go 服务端或 Go 工具链。控制/数据两个 Rust 进程用于隔离故障。
+
+仅用户变更可以原子替换认证表，既有连接继续使用认证时的稳定身份；删除用户阻止新连接，已认证连接可继续。监听/TLS 等变更仍完整重启。按用户统计实际转发载荷，原生计数周期存档，冻结快照和控制器队列先落盘再确认；结果不确定的上报批次暂停重发。正常退出先结束载荷任务，再采集最后金额。尚未落盘的强杀尾部、生产账单对账、限速、设备控制、REALITY 等其他协议和多节点继续迁移。
+
+详见 [原生计数持久化与停止协议](docs/RUST_NATIVE_DURABILITY_ZH.md)、[流量统计与可靠上报](docs/RUST_TRAFFIC_ZH.md)、[Rust 重构进度](docs/RUST_MIGRATION_ZH.md) 和 [Rust 交接入口](HANDOFF_RUST.md)。默认配置在 `examples/runtime-rust.json`，不填写 `singbox_executable` 即使用内置 Rust 数据层。原 Go 源码、安装方式和此前外部 Go 过渡方案保留在仓库中；下文原版功能表不代表 Rust 已全部实现。新 Rust 代码沿用 MPL-2.0。
+
+2026-10-02 的原生持久化候选 nd3 已通过 Windows 104 项、Linux ARM64 113 项测试及 fmt/严格 clippy；五个新增恢复/停止案例、七个原流量案例，以及前序协议/热更新/故障/连接/FD 回归均通过。同一最终 Rust ELF 为 4,462,520 字节，需 glibc 2.39+ 与 libgcc_s，较 acct4 增加 128 KiB；详细数据和范围见 [本版本机器可读结果](benchmarks/results/rust-native-durable-20261002.json)。默认存档间隔一秒，不能消除尚未提交的强杀尾部；进程崩溃测试不等于断电或真实面板计费验收。
+
 Node backend for [Xboard](https://github.com/cedar2025/Xboard). Supports `sing-box` / `xray-core` dual kernels.
 
 > **Disclaimer**: This project is for educational and learning purposes only.

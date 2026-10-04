@@ -32,3 +32,10 @@ internal/tracker/tracker_bench_test.go
 cmd/xboard-node-bench-compare
 cmd/xboard-node-bench
 .env
+# Rust development state
+/target/
+/.Codex/
+/.hermes/
+/runtime-state/
+/kernels/native-users/.build/
+__pycache__/

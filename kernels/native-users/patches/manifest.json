@@ -1,0 +1,38 @@
+{
+  "modules": {
+    "singbox": "github.com/cedar2025/sing-box@v1.14.0-alpha.2.0.20260316103356-2e665cb7e295",
+    "singvmess": "github.com/sagernet/sing-vmess@v0.2.8-0.20250909125414-3aed155119a1"
+  },
+  "files": [
+    {
+      "path": "singbox/protocol/vless/inbound.go",
+      "upstream_sha256": "ee8a90e4aa9c839e1771ab3627407f6830d232979541ab6bc1158cb32b44b16c",
+      "patched_sha256": "f601f7908e12afd2271fa82c738d332489b8ef42f10ed345cde7d5af2729e734"
+    },
+    {
+      "path": "singbox/protocol/vless/user.go",
+      "upstream_sha256": "412d7745a89d4b1832316c318dc3d507d0743e7bf4a55088950a5bb7a7df3d57",
+      "patched_sha256": "78af81b6d7d631f6f1af3e5ed47ebe2b44f6a6fc3bf9dc390f94fe8ef654324b"
+    },
+    {
+      "path": "singbox/protocol/trojan/inbound.go",
+      "upstream_sha256": "b9fc681d8dcf4dff71da2eee938e2023686c857e29706e6a3a3edf52113a1cf3",
+      "patched_sha256": "517724b46f58f9a4af8ef11bf1f05b37536477d3d8e2bdae5d29b4141b078868"
+    },
+    {
+      "path": "singbox/protocol/trojan/user.go",
+      "upstream_sha256": "8e94b3806a0bc4d5e771a7f11fa56babf1a5d799d4821f22953e5eb57a539d58",
+      "patched_sha256": "4202277916e90e3d22369d827600fcd3456a4770c59f87c8af16fb7fd21f888d"
+    },
+    {
+      "path": "singvmess/vless/service.go",
+      "upstream_sha256": "2e3a18878ac06cbfc0ec2b7a65876ede9ffe4358affd95fd4fc833a46fa28a80",
+      "patched_sha256": "a656e3a4385c2c82c3a71503dd9237a15040c61ab6654e64fa0e1a630fe6be0a"
+    },
+    {
+      "path": "singbox/transport/trojan/service.go",
+      "upstream_sha256": "6ffe5d2408d4b391b2e625de0777debecbd02c1a01c1b079f46c18fcac114edf",
+      "patched_sha256": "cf23e0e7713b830a442f5e8a27481f8950ce00d90d427c2d23223e80e850f9b6"
+    }
+  ]
+}
